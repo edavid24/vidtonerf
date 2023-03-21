@@ -14,10 +14,8 @@ When running the web-server a local file structure should be created to match th
 ├── data
 |	├── raw 
 |   |   ├── JOBID 
-|	|	|   ├── videos 				
-|	|	|	├──imgs	
-│	├── sfm        		
-|	|			
+|	|	|   ├── video			
+|	|	|	├──imgs			
 │	├── nerf 
 │  	|	├── JOBID
 
@@ -32,7 +30,6 @@ Scene:
     "status":int,
     "video": <Video>,
     "sfm": <Sfm>,
-    "nerf": <Nerf>
 }
 ```
 
@@ -63,14 +60,6 @@ Sfm:
 {
     "intrinsic_matrix": [[float]],
     "frames": [<Frame>]
-}
-```
-
-Nerf:
-```
-{
-    "model_file_path":str,
-    "rendered_video_path":str
 }
 ```
 
