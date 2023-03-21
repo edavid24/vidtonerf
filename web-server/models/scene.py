@@ -106,6 +106,30 @@ class Frame:
         result = {k:v for k,v in result.items() if v}
         return result
 
+@dataclass
+class Image: 
+    file_path: Optional[str] = None 
+    flags: Optional[list] = None
+    base_url = "http://host.docker.internal:5000/"
+
+
+    def read_flags(self):
+        for i in self.flags:
+            pass
+    
+    def to_url(self):
+        return self.base_url+"/worker-data/"+self.file_path
+    
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["file_path"] = from_union([from_str, from_none], self.file_path)
+        result["flags"] = self.flags
+
+        #ingnore null
+        result = {k:v for k,v in result.items() if v}
+        return result
+
+
 
 @dataclass
 class Sfm:
