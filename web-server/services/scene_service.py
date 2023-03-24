@@ -1,7 +1,7 @@
 import os
 import requests
 import json
-from models.scene import SceneManager, Video
+from models.scene import SceneManager, Video, Image
 from services.queue_service import RabbitMQService
 from uuid import uuid4, UUID
 from video_to_images import split_video_into_frames
@@ -32,7 +32,7 @@ class ClientService:
         # generate new id and save to file with db record
         uuid = str(uuid4())
         video_name = uuid + ".mp4"
-        videos_folder = "data/raw/videos"
+        videos_folder = "raw/"+uuid+"/video"
         video_file_path = os.path.join(videos_folder,video_name)
         
         video_file.save(video_file_path)
@@ -41,19 +41,24 @@ class ClientService:
         self.manager.set_video(uuid, video)
 
         ## TODO add following path into web sever
-        imgs_folder = "data/raw/images"
-        os.makedirs(imgs_folder, exist_ok=True) 
-
-        img_file_path = os.path.join(imgs_folder,uuid+".jpg")
+        imgs_folder = "raw/"+ uuid + "/imgs"
 
         # split video into images and store into imgs_folder
         split_video_into_frames(video_file_path, imgs_folder, 200)
 
 
-        # TODO convert images into most likely a "frame" object
+        # convert images into Image objects
+        image_array = []
+        
+        for filename in os.listdir(imgs_folder):
+        # Check if the file is a regular file (not a directory)
+            if os.path.isfile(os.path.join(imgs_folder, filename)):
+                image_array.append(Image(file_path=filename))
+
+        
         
         #TODO change this from publishing a video to publishing a set of images
-        self.rmqservice.publish_img_job(uuid, video)
+        #self.rmqservice.publish_img_job(uuid, video)
 
         return uuid
 
