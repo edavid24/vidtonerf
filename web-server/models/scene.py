@@ -3,6 +3,9 @@ import numpy.typing as npt
 from pymongo import MongoClient
 from dataclasses import dataclass
 from typing import List, Any, TypeVar, Callable, Type, cast
+from uuid import uuid4, UUID
+import controller
+import matplotlib.pyplot as plt
 
 # dataclasses generated with Quicktype https://github.com/quicktype/quicktype
 # To use this code, make sure you
@@ -111,8 +114,20 @@ class Image:
     file_path: Optional[str] = None 
     flags: Optional[list] = None
     base_url = "http://host.docker.internal:5000/"
+    image_data = Optional[npt.NDArray] =None 
 
-
+    #Return a numpy array containing the data of the current image
+    def load_data(self):
+        if(image_data == None):
+            image_data = plt.imread(self.file_path)
+        return image_data
+    
+    def get_URL(self):
+        return "{}/worker-data/{}".format(self.base_url,self.file_path)
+    
+    def save_data(self):
+        return
+    
     def read_flags(self):
         for i in self.flags:
             pass
@@ -128,8 +143,6 @@ class Image:
         #ingnore null
         result = {k:v for k,v in result.items() if v}
         return result
-
-
 
 @dataclass
 class Sfm:
