@@ -147,13 +147,13 @@ class Image:
 @dataclass
 class Sfm:
     intrinsic_matrix: Optional[npt.NDArray] = None
-    frames: Optional[List[Frame]] = None
+    imgs: Optional[List[Image]] = None
 
     @staticmethod
     def from_dict(obj: Any) -> 'Sfm':
         assert isinstance(obj, dict)
         intrinsic_matrix = np.array(from_union([lambda x: from_list(lambda x: from_list(from_float, x), x), from_none], obj.get("intrinsic_matrix")))
-        frames = from_union([lambda x: from_list(Frame.from_dict, x), from_none], obj.get("frames"))
+        imgs = from_union([lambda x: from_list(Image.from_dict, x), from_none], obj.get("images"))
         return Sfm(intrinsic_matrix, frames)
 
     def to_dict(self) -> dict:
