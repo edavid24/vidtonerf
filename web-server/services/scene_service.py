@@ -58,7 +58,7 @@ class ClientService:
         
         
         #TODO change this from publishing a video to publishing a set of images
-        #self.rmqservice.publish_img_job(uuid, video)
+        self.rmqservice.publish_sfm_job(uuid, image_array)
 
         return uuid
 
