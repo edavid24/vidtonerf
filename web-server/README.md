@@ -12,9 +12,9 @@ The webserver is based on a model view controller architecture with an additiona
 When running the web-server a local file structure should be created to match the following layout. This is where the server will store all images, videos, and non text based data.
 ```
 ├── data
-|	├── raw 
+|   ├── raw 
 |   |   ├── JOBID 
-|	|	|   ├── video			
+|	|   |   ├── video			
 |	|	|	├──imgs			
 │	├── nerf 
 │  	|	├── JOBID
