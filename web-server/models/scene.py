@@ -6,6 +6,7 @@ from typing import List, Any, TypeVar, Callable, Type, cast
 from uuid import uuid4, UUID
 import controller
 import matplotlib.pyplot as plt
+import cv2
 
 # dataclasses generated with Quicktype https://github.com/quicktype/quicktype
 # To use this code, make sure you
@@ -162,7 +163,20 @@ class Video:
 
     def load_data(self):
         if(self.video_data == None):
-            return self
+            cap = cv2.VideoCapture(self.file_path)
+            frames = []
+            while(cap.isOpen()):
+                ret, frame = cap.read()
+                if ret: 
+                    frames.append(frame)
+                else:
+                    break
+        
+            video_np = np.array(frames)
+            cap.release()
+            return video_np
+
+
 
     def send_url(self):
         return self.base_url+"/worker-data/"+self.file_path
