@@ -3,7 +3,11 @@ import numpy.typing as npt
 from pymongo import MongoClient
 from dataclasses import dataclass
 from typing import List, Any, TypeVar, Callable, Type, cast
-from uuid import uuid4
+
+from uuid import uuid4, UUID
+import controller
+import matplotlib.pyplot as plt
+import cv2
 
 # dataclasses generated with Quicktype https://github.com/quicktype/quicktype
 # To use this code, make sure you
@@ -107,38 +111,79 @@ class Frame:
         result = {k:v for k,v in result.items() if v}
         return result
 
-
 @dataclass
-class Sfm:
-    intrinsic_matrix: Optional[npt.NDArray] = None
-    frames: Optional[List[Frame]] = None
+class Image: 
+    file_path: Optional[str] = None 
+    flags: Optional[list] = None
+    base_url = "http://host.docker.internal:5000/"
+    image_data = Optional[npt.NDArray] =None 
 
-    @staticmethod
-    def from_dict(obj: Any) -> 'Sfm':
-        assert isinstance(obj, dict)
-        intrinsic_matrix = np.array(from_union([lambda x: from_list(lambda x: from_list(from_float, x), x), from_none], obj.get("intrinsic_matrix")))
-        frames = from_union([lambda x: from_list(Frame.from_dict, x), from_none], obj.get("frames"))
-        return Sfm(intrinsic_matrix, frames)
-
+    #Return a numpy array containing the data of the current image
+    def load_data(self):
+        if(image_data == None):
+            image_data = plt.imread(self.file_path)
+        return image_data
+    
+    def get_URL(self):
+        return "{}/worker-data/{}".format(self.base_url,self.file_path)
+    
+    def save_data(self):
+        return
+    
+    def read_flags(self):
+        for i in self.flags:
+            pass
+    
+    def to_url(self):
+        return self.base_url+"/worker-data/"+self.file_path
+    
     def to_dict(self) -> dict:
         result: dict = {}
-        result["intrinsic_matrix"] = from_union([lambda x: from_list(lambda x: from_list(from_float, x), x), from_none], self.intrinsic_matrix.tolist())
-        result["frames"] = from_union([lambda x: from_list(lambda x: to_class(Frame, x), x), from_none], self.frames)
+        result["file_path"] = from_union([from_str, from_none], self.file_path)
+        result["flags"] = self.flags
 
         #ingnore null
         result = {k:v for k,v in result.items() if v}
         return result
-
-
-@dataclass
+    
+@dataclass 
 class Video:
-    file_path: Optional[str] = None
+    
+    #Old parameters 
     width: Optional[int] = None
     height: Optional[int] = None
     fps: Optional[int] = None
     duration: Optional[int] = None
     frame_count: Optional[int] = None
 
+    #New parameters 
+    file_path: Optional[str] = None 
+    video_data = Optional[npt.NDArray] = None
+    base_url = "http://host.docker.internal:5000/"
+    video_id = Optional[str] = None
+
+    def load_data(self):
+        if(self.video_data == None):
+            cap = cv2.VideoCapture(self.file_path)
+            frames = []
+            while(cap.isOpen()):
+                ret, frame = cap.read()
+                if ret: 
+                    frames.append(frame)
+                else:
+                    break
+        
+            video_np = np.array(frames)
+            cap.release()
+            return video_np
+
+
+
+    def send_url(self):
+        return self.base_url+"/worker-data/"+self.file_path
+    
+
+    #Old Functionality so it doesn't break anything else 
     @staticmethod
     def from_dict(obj: Any) -> 'Video':
         assert isinstance(obj, dict)
@@ -149,7 +194,8 @@ class Video:
         duration = from_union([from_float, from_none], obj.get("duration"))
         frame_count = from_union([from_int, from_none], obj.get("frame_count"))
         return Video(file_path, width, height, fps, duration, frame_count)
-
+    
+    
     def to_dict(self) -> dict:
         result: dict = {}
         result["file_path"] = from_union([from_str, from_none], self.file_path)
@@ -162,6 +208,68 @@ class Video:
         #ingnore null
         result = {k:v for k,v in result.items() if v}
         return result
+
+
+
+
+
+
+@dataclass
+class Sfm:
+    intrinsic_matrix: Optional[npt.NDArray] = None
+    imgs: Optional[List[Image]] = None
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'Sfm':
+        assert isinstance(obj, dict)
+        intrinsic_matrix = np.array(from_union([lambda x: from_list(lambda x: from_list(from_float, x), x), from_none], obj.get("intrinsic_matrix")))
+        imgs = from_union([lambda x: from_list(Image.from_dict, x), from_none], obj.get("images"))
+        return Sfm(intrinsic_matrix, frames)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["intrinsic_matrix"] = from_union([lambda x: from_list(lambda x: from_list(from_float, x), x), from_none], self.intrinsic_matrix.tolist())
+        result["frames"] = from_union([lambda x: from_list(lambda x: to_class(Frame, x), x), from_none], self.frames)
+
+        #ingnore null
+        result = {k:v for k,v in result.items() if v}
+        return result
+    
+    
+
+
+# @dataclass
+# class Video:
+#     file_path: Optional[str] = None
+#     width: Optional[int] = None
+#     height: Optional[int] = None
+#     fps: Optional[int] = None
+#     duration: Optional[int] = None
+#     frame_count: Optional[int] = None
+
+#     @staticmethod
+#     def from_dict(obj: Any) -> 'Video':
+#         assert isinstance(obj, dict)
+#         file_path = from_union([from_str, from_none], obj.get("file_path"))
+#         width = from_union([from_int, from_none], obj.get("width"))
+#         height = from_union([from_int, from_none], obj.get("height"))
+#         fps = from_union([from_float, from_none], obj.get("fps"))
+#         duration = from_union([from_float, from_none], obj.get("duration"))
+#         frame_count = from_union([from_int, from_none], obj.get("frame_count"))
+#         return Video(file_path, width, height, fps, duration, frame_count)
+
+    # def to_dict(self) -> dict:
+    #     result: dict = {}
+    #     result["file_path"] = from_union([from_str, from_none], self.file_path)
+    #     result["width"] = from_union([from_int, from_none], self.width)
+    #     result["height"] = from_union([from_int, from_none], self.height)
+    #     result["fps"] = from_union([from_float, from_none], self.fps)
+    #     result["duration"] = from_union([from_float, from_none], self.duration)
+    #     result["frame_count"] = from_union([from_int, from_none], self.frame_count)
+
+    #     #ingnore null
+    #     result = {k:v for k,v in result.items() if v}
+    #     return result
 
 
 @dataclass

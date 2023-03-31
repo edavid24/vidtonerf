@@ -12,13 +12,12 @@ The webserver is based on a model view controller architecture with an additiona
 When running the web-server a local file structure should be created to match the following layout. This is where the server will store all images, videos, and non text based data.
 ```
 ├── data
-|	├── raw       		
-|	|	|── videos 			
-│	├── sfm        		
-|	|	|── JOBID 			
-|	|		|──imgs			
-│	├── nerf 
-│  	|	|── JOBID
+|   ├── raw 
+|   |   ├── JOBID 
+|   |   |   ├── video			
+|   |   |   ├──imgs			
+│   ├── nerf 
+│   |   ├── JOBID
 
 ```
 ### DB structure
@@ -31,7 +30,6 @@ Scene:
     "status":int,
     "video": <Video>,
     "sfm": <Sfm>,
-    "nerf": <Nerf>
 }
 ```
 
@@ -50,19 +48,18 @@ Frame:
     "extrinsic_matrix": [[float]]
 }
 ```
+Image:
+```
+{
+    "file_path": str,
+    "flags: [[str]]
+}
+```
 Sfm:
 ```
 {
     "intrinsic_matrix": [[float]],
     "frames": [<Frame>]
-}
-```
-
-Nerf:
-```
-{
-    "model_file_path":str,
-    "rendered_video_path":str
 }
 ```
 
