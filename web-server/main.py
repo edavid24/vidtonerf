@@ -3,6 +3,7 @@ This file loads the environment variables from the .env file.
 Afterwards, the Web Server is started.
 """
 
+import os
 from argparser import create_arguments
 from controller import WebServer
 import threading
@@ -18,6 +19,9 @@ def main():
     
     parser = create_arguments()
     args = parser.parse_args()
+
+    # initialize file structure
+    initDirs()
     
     # Shared Database manager <from models>
     # SceneManager shared across threads since it is thread safe
@@ -40,6 +44,12 @@ def main():
     # start listening to incoming requests on the controller <from controllers>
     server = WebServer(args, c_service)
     server.run()
+
+def initDirs():
+    os.makedirs("./data", exist_ok=True)
+    os.makedirs("./data/raw", exist_ok=True)
+    os.makedirs("./data/nerf", exist_ok=True)
+    
 
 if __name__ == "__main__":
     main()

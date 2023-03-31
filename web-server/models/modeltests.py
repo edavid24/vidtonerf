@@ -1,6 +1,22 @@
 import unittest
 import scene
 
+
+class imageClassTest(unittest.TestCase):
+    def setUp(self):
+        self.image = scene.Image()
+        self.image.drop()
+
+    def test_save_data(self):
+        return 
+        
+    def test_load_data(self):
+        return
+    
+
+    
+
+
 class userManagerTest(unittest.TestCase):
     def setUp(self):                            #fires before the test starts
         self.user_manager = scene.UserManager()
