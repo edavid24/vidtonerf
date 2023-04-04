@@ -44,8 +44,8 @@ class ClientService:
         imgs_folder = "raw/"+ uuid + "/imgs"
 
         # split video into images and store into imgs_folder
-        split_video_into_frames(video_file_path, imgs_folder, 200)
-
+        blur_check = True
+        split_video_into_frames(video_file_path, imgs_folder, 200, blur_check)
 
         # convert images into Image objects
         image_array = []
@@ -54,8 +54,6 @@ class ClientService:
         # Check if the file is a regular file (not a directory)
             if os.path.isfile(os.path.join(imgs_folder, filename)):
                 image_array.append(Image(file_path=filename))
-
-        
         
         #TODO change this from publishing a video to publishing a set of images
         self.rmqservice.publish_sfm_job(uuid, image_array)
@@ -71,4 +69,3 @@ class ClientService:
         if nerf:
             return ("Video ready", nerf.rendered_video_path)
         return None
-        

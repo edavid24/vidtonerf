@@ -116,7 +116,7 @@ class Image:
     file_path: Optional[str] = None 
     flags: Optional[list] = None
     base_url = "http://host.docker.internal:5000/"
-    image_data = Optional[npt.NDArray] =None 
+    image_data: Optional[npt.NDArray] =None 
 
     #Return a numpy array containing the data of the current image
     def load_data(self):
@@ -158,9 +158,9 @@ class Video:
 
     #New parameters 
     file_path: Optional[str] = None 
-    video_data = Optional[npt.NDArray] = None
+    video_data: Optional[npt.NDArray] = None
     base_url = "http://host.docker.internal:5000/"
-    video_id = Optional[str] = None
+    video_id: Optional[str] = None
 
     def load_data(self):
         if(self.video_data == None):

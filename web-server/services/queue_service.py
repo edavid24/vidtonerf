@@ -1,5 +1,3 @@
-
-from ast import List
 import pika, os, logging
 from models.scene import Video, Sfm, Nerf, SceneManager, Image
 import json
@@ -42,7 +40,7 @@ class RabbitMQService:
         return self.base_url+"/worker-data/"+file_path
 
     #
-    def publish_sfm_job(self, id: str, imgs: List[Image] ):
+    def publish_sfm_job(self, id: str, imgs: list[Image] ):
         """
             publish_sfm_job publishes a new job to the sfm-in que hosted on RabbitMQ
         """
