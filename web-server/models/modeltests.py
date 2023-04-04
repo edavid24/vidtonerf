@@ -1,5 +1,8 @@
 import unittest
 import scene
+import cv2
+import numpy as np
+import os
 
 class userManagerTest(unittest.TestCase):
     def setUp(self):                            #fires before the test starts
@@ -46,8 +49,49 @@ class userManagerTest(unittest.TestCase):
     #def tearDown(self):                    #fires after the test is completed
         #self.user_manager.collection.drop()
 
+#Generate Noise Video
+def generateVideo(self):
+    size = 720*16//9, 720
+    duration = 2
+    fps = 25
+    out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, (size[1], size[0]), False)
+    for _ in range(fps * duration):
+        data = np.random.randint(0, 256, size, dtype='uint8')
+        out.write(data)
+    
+    return out
+
+class videoManagerTest(unittest.TestCase):
+    def setUp(self):
+        self.user_video = scene.SceneManager()
+        self.user_video.collection.drop()
+
+    def videoTest(self):
+        v = scene.Video()
+        example_video = self.generateVideo()
+        example_video.release()
+
+        v.file_path = "output.mp4"
+        try:
+            v.load_data()
+        except: 
+            print("An error has occured")
+
+        self.assertIsNotNone(v.video_data)
+        
+        if os.path.exists('output.mp4'):
+            os.remove("output.mp4")
+            print("File Removed Success")
+        else:
+            print("File does not exist ")
+        
 
 
+
+        #After Testing we want to release the output.mp4
+
+
+        
 
 
 
