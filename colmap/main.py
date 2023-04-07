@@ -35,20 +35,11 @@ def to_url(local_file_path: str):
     return base_url + local_file_path
 
 
-def run_full_sfm_pipeline(id, video_file_path, input_data_dir, output_data_dir):
+def run_full_sfm_pipeline(id, imgs_folder, output_path):
     # run colmap and save data to custom directory
     # Create output directory under data/output_data_dir/id
     # TODO: use library to fix filepath joining
-    if not output_data_dir.endswith(("\\", "/")) and not id.startswith(("\\", "/")):
-        output_data_dir = output_data_dir + "/"
-    output_path = output_data_dir + id
-    Path(f"{output_path}").mkdir(parents=True, exist_ok=True)
-
-    # (1) vid_to_images.py
-    imgs_folder = os.path.join(output_path, "imgs")
-    print(video_file_path)
-
-    split_video_into_frames(video_file_path, imgs_folder, 100)
+    
     # imgs are now in output_data_dir/id
 
     # (2) colmap_runner.py
@@ -72,7 +63,7 @@ def run_full_sfm_pipeline(id, video_file_path, input_data_dir, output_data_dir):
     with open(os.path.join(output_path, "transforms_data.json"), "w") as outfile:
         outfile.write(json.dumps(motion_data, indent=4))
 
-    return motion_data, imgs_folder
+    return motion_data
 
 
 def colmap_worker():
@@ -101,16 +92,34 @@ def colmap_worker():
         print(f"Running New Job With ID: {id}")
 
         # TODO: Handle exceptions and enable steaming to make safer
-        video = requests.get(job_data["file_path"], timeout=10)
-        print("Web server pinged")
-        video_file_path = f"{input_data_dir}{id}.mp4"
-        print("Saving video to: {video_file_path}")
-        open(video_file_path, "wb").write(video.content)
-        print("Video downloaded")
+        # video = requests.get(job_data["urls"], timeout=10)
+        # print("Web server pinged")
+        # video_file_path = f"{input_data_dir}{id}.mp4"
+        # print("Saving video to: {video_file_path}")
+        # open(video_file_path, "wb").write(video.content)
+        # print("Video downloaded")
+        if not output_data_dir.endswith(("\\", "/")) and not id.startswith(("\\", "/")):
+            output_data_dir = output_data_dir + "/"
+        output_path = output_data_dir + id
+        Path(f"{output_path}").mkdir(parents=True, exist_ok=True)
+
+        # (1) vid_to_images.py
+        imgs_folder = os.path.join(output_path, "imgs")       
+        
+        img_links = job_data["urls"]
+        i = 0
+        for link in img_links:
+            img = requests.get(link)
+            print("Web server pinged")
+            img_file_path = f"{input_data_dir}/img_{i}.png"
+            print(f"Saving image to: {img_file_path}")
+            open(img_file_path, "wb").write(img.content)
+            print("Image downloaded")
+            i+=1
 
         # RUNS COLMAP AND CONVERSION CODE
-        motion_data, imgs_folder = run_full_sfm_pipeline(
-            id, video_file_path, input_data_dir, output_data_dir
+        motion_data = run_full_sfm_pipeline(
+            id, imgs_folder, output_path
         )
 
         # create links to local data to serve
