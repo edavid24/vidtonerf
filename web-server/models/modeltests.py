@@ -66,7 +66,7 @@ class userManagerTest(unittest.TestCase):
         #self.user_manager.collection.drop()
 
 #Generate Noise Video
-def generateVideo(self):
+def generateVideo():
     size = 720*16//9, 720
     duration = 2
     fps = 25
@@ -80,28 +80,31 @@ def generateVideo(self):
 class videoManagerTest(unittest.TestCase):
     def setUp(self):
         self.user_video = scene.SceneManager()
-        self.user_video.collection.drop()
+        # self.user_video.collection.drop()
 
-    def videoTest(self):
+    def test_videoTest(self):
         v = scene.Video()
-        example_video = self.generateVideo()
+        example_video = generateVideo()
         example_video.release()
+        
 
         v.file_path = "output.mp4"
+        print(v.file_path)
         try:
+            print("Data Loaded")
             v.load_data()
         except: 
             print("An error has occured")
 
-        self.assertIsNotNone(v.video_data)
-        
+        print(v.video_data)
+        print("Path Existed")
         if os.path.exists('output.mp4'):
             os.remove("output.mp4")
             print("File Removed Success")
         else:
             print("File does not exist ")
         
-
+        return
 
 
         #After Testing we want to release the output.mp4

@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import List, Any, TypeVar, Callable, Type, cast
 
 from uuid import uuid4, UUID
-import controller
+# import controller
 import matplotlib.pyplot as plt
 import cv2
 
@@ -175,6 +175,7 @@ class Video:
         
             video_np = np.array(frames)
             cap.release()
+            video_data = video_np
             return video_np
 
 
