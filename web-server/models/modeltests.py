@@ -71,6 +71,7 @@ def generateVideo():
     duration = 2
     fps = 25
     out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, (size[1], size[0]), False)
+    
     for _ in range(fps * duration):
         data = np.random.randint(0, 256, size, dtype='uint8')
         out.write(data)
@@ -80,21 +81,21 @@ def generateVideo():
 class videoManagerTest(unittest.TestCase):
     def setUp(self):
         self.user_video = scene.SceneManager()
-        # self.user_video.collection.drop()
 
     def test_videoTest(self):
         v = scene.Video()
         example_video = generateVideo()
         example_video.release()
         
-
         v.file_path = "output.mp4"
-        print(v.file_path)
+
         try:
             print("Data Loaded")
             v.load_data()
-        except: 
-            print("An error has occured")
+        except Exception as e: 
+            self.fail(f"an Error has occurred:{e}")
+
+        self.assertIsNone(v.video_data)
 
         print(v.video_data)
         print("Path Existed")
@@ -102,8 +103,46 @@ class videoManagerTest(unittest.TestCase):
             os.remove("output.mp4")
             print("File Removed Success")
         else:
-            print("File does not exist ")
+            self.fail("File does not exist")
+    
+    def test_toDictTest(self):
+
         
+
+        def test_to_dict(self):
+            #creating a new video object
+
+            example_video = generateVideo()
+            example_video.release()
+        
+            o_file_path = "output.mp4"
+
+            video = scene.Video(file_path = o_file_path,
+                                width = 720*16//9,
+                                height = 720,
+                                fps = 25 ,
+                                duration = 2,)
+            expected_dict = {
+                "file_path" : "output.mp4",
+                "width" : 720*16//9,
+                "height" : 720, 
+                "fps" : 25,
+                "duration": 2,
+            }
+
+            self.assertEqual(video.to_dict, expected_dict)
+
+            self.assertEqual(dict(video), expected_dict)
+
+            
+
+
+
+            if os.path.exists('output.mp4'):
+                os.remove("output.mp4")
+                print("File Removed Success")
+            else:
+                self.fail("File does not exist")
         return
 
 
