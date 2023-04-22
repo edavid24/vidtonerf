@@ -162,6 +162,7 @@ class Video:
     base_url = "http://host.docker.internal:5000/"
     video_id: Optional[str] = None
 
+    #Load data function takes a url and uses opencv to encode it into a numpy array 
     def load_data(self):
         if(self.video_data == None):
             cap = cv2.VideoCapture(self.file_path)
@@ -174,12 +175,13 @@ class Video:
                     break
         
             video_np = np.array(frames)
+            #Release the video so it doesn't take space and continue 
             cap.release()
             video_data = video_np
             return video_np
 
 
-
+    #Sending the url to the endpoint 
     def send_url(self):
         return self.base_url+"/worker-data/"+self.file_path
     
@@ -209,10 +211,6 @@ class Video:
         #ingnore null
         result = {k:v for k,v in result.items() if v}
         return result
-
-
-
-
 
 
 @dataclass
