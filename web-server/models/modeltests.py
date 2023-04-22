@@ -17,7 +17,6 @@ class imageClassTest(unittest.TestCase):
         return
     
 
-    
 
 
 class userManagerTest(unittest.TestCase):
@@ -67,28 +66,36 @@ class userManagerTest(unittest.TestCase):
 
 #Generate Noise Video
 def generateVideo():
+    
     size = 720*16//9, 720
     duration = 2
     fps = 25
+    #VideoWriter_fourcc is a function to specify the video codec to use, and in this case mp4v is the codec 
     out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, (size[1], size[0]), False)
     
+    #Go through the frames of the video and write it to out 
     for _ in range(fps * duration):
         data = np.random.randint(0, 256, size, dtype='uint8')
         out.write(data)
     
     return out
 
+#Testing Suite for the Video class for scene
 class videoManagerTest(unittest.TestCase):
+    #initalize a scenemanager 
     def setUp(self):
         self.user_video = scene.SceneManager()
 
+    #actual test 
     def test_videoTest(self):
         v = scene.Video()
         example_video = generateVideo()
         example_video.release()
         
+        #save to local file system at the name "output.mp4"
         v.file_path = "output.mp4"
 
+        #Try to load the data and see if it exists 
         try:
             print("Data Loaded")
             v.load_data()
@@ -97,8 +104,10 @@ class videoManagerTest(unittest.TestCase):
 
         self.assertIsNone(v.video_data)
 
+        #check the video_data by matching with expected results 
         print(v.video_data)
         print("Path Existed")
+        #Lastly remove the file to ensure no residue is left behind
         if os.path.exists('output.mp4'):
             os.remove("output.mp4")
             print("File Removed Success")
@@ -106,12 +115,8 @@ class videoManagerTest(unittest.TestCase):
             self.fail("File does not exist")
     
     def test_toDictTest(self):
-
-        
-
         def test_to_dict(self):
             #creating a new video object
-
             example_video = generateVideo()
             example_video.release()
         
@@ -134,19 +139,45 @@ class videoManagerTest(unittest.TestCase):
 
             self.assertEqual(dict(video), expected_dict)
 
-            
-
-
-
             if os.path.exists('output.mp4'):
                 os.remove("output.mp4")
                 print("File Removed Success")
             else:
                 self.fail("File does not exist")
         return
+    
+    def test_fromDictTest(self):
+            #creating a new video object
+            example_video = generateVideo()
+            example_video.release()
+
+            this_dict = {
+                "file_path" : "output.mp4",
+                "width" : 720*16//9,
+                "height" : 720, 
+                "fps" : 25,
+                "duration": 2,
+            }
+            preconstructed_video = scene.Video()
+            preconstructed_video.from_dict(this_dict)
+
+            o_file_path = "output.mp4"
+            finished_video = scene.Video(file_path = o_file_path,
+                    width = 720*16//9,
+                    height = 720,
+                    fps = 25 ,
+                    duration = 2,)
+            
+            self.assertEquals(preconstructed_video.to_dict, finished_video.to_dict)
+
+            if os.path.exists('output.mp4'):
+                os.remove("output.mp4")
+                print("File Removed Success")
+            else:
+                self.fail("File does not exist")
 
 
-        #After Testing we want to release the output.mp4
+
 
 
         
